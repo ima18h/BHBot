@@ -1,4 +1,6 @@
-# BHBot
+# BHBot, ima18h's version
+I mostly added functionality and also maintained it so that it would work with updated versions of the game. 
+This version is deprecated and, I believe, doesn't work anymore. 
 
 ## What is BHBot?
 BHBot is a program that automates different aspects of the [Bit Heroes](http://www.kongregate.com/games/juppiomenz/bit-heroes) game.
