@@ -1,16 +1,28 @@
 
 public class Scheduler {
-	/** Instructs bot to do 1 raid immediately (after which this flag will get reset to 'false' */
+	/**
+	 * Instructs bot to do 1 raid immediately (after which this flag will get reset to 'false'
+	 */
 	boolean doRaidImmediately;
-	/** Instructs bot to do 1 dungeon immediately (after which this flag will get reset to 'false' */
+	/**
+	 * Instructs bot to do 1 dungeon immediately (after which this flag will get reset to 'false'
+	 */
 	boolean doDungeonImmediately;
-	/** Instructs bot to do 1 trials/gauntlet immediately (after which this flag will get reset to 'false' */
+	/**
+	 * Instructs bot to do 1 trials/gauntlet immediately (after which this flag will get reset to 'false'
+	 */
 	boolean doTrialsOrGauntletImmediately;
-	/** Instructs bot to do 1 PVP battle immediately (after which this flag will get reset to 'false' */
+	/**
+	 * Instructs bot to do 1 PVP battle immediately (after which this flag will get reset to 'false'
+	 */
 	boolean doPVPImmediately;
-	/** Instructs bot to do 1 GVG battle immediately (after which this flag will get reset to 'false' */
+	/**
+	 * Instructs bot to do 1 GVG battle immediately (after which this flag will get reset to 'false'
+	 */
 	boolean doGVGImmediately;
-	/** Instructs bot to do 1 Invasion immediately (after which this flag will get reset to 'false' */
+	/**
+	 * Instructs bot to do 1 Invasion immediately (after which this flag will get reset to 'false'
+	 */
 	boolean doInvasionImmediately;
 	
 	private static final long PAUSED_INDEFINITELY = Long.MAX_VALUE;
@@ -18,11 +30,15 @@ public class Scheduler {
 	private long pauseDuration; // in milliseconds
 	private long pauseStart; // in milliseconds (related to Misc.getTime())
 	
-	/** Note that this is not idle time duration but rather a start time stamp! */
+	/**
+	 * Note that this is not idle time duration but rather a start time stamp!
+	 */
 	private long idleTime = 0;
 	private long idleTimeBackup = 0; // temp variable
 	
-	/** Set it to true when user logs in and we must wait for him to finish interacting. */
+	/**
+	 * Set it to true when user logs in and we must wait for him to finish interacting.
+	 */
 	public boolean isUserInteracting = false;
 	
 	public boolean dismissReconnectOnNextIteration = false;
@@ -79,11 +95,13 @@ public class Scheduler {
 		 * Now bot must dismiss the reconnect dialog and not enter 1h pause on encountering
 		 * the "reconnect" dialog. With this flag, we make sure he does just that.
 		 */
-		dismissReconnectOnNextIteration = true; 
+		dismissReconnectOnNextIteration = true;
 		BHBot.log("Resumed.");
 	}
 	
-	/** Returns time stamp (and not duration)! */
+	/**
+	 * Returns time stamp (and not duration)!
+	 */
 	public long getIdleTime() {
 		return idleTime;
 	}

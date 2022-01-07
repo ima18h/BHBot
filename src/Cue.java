@@ -1,7 +1,6 @@
 import java.awt.image.BufferedImage;
 
 /**
- * 
  * @author Betalord
  */
 public class Cue {
@@ -9,7 +8,8 @@ public class Cue {
 	public BufferedImage im;
 	public Bounds bounds;
 	
-	public Cue() { }
+	public Cue() {
+	}
 	
 	public Cue(String name, BufferedImage im) {
 		this.name = name;

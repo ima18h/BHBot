@@ -21,14 +21,16 @@ import org.openqa.selenium.WebElement;
 import com.assertthat.selenium_shutterbug.core.Shutterbug;
 
 public class BHBot {
-
-	public static final String PROGRAM_NAME = "BHBot";
-	public static final int PROGRAM_VERSION = 21;
+	
+	public static final String PROGRAM_NAME = "Persuader";
+	public static final int PROGRAM_VERSION = 2;
 	public static final boolean REQUIRES_ACCESS_TOKEN = false; // obsolete since public release (was used to restrict bot usage)
 	
 	public static Thread mainThread;
 	public static MainThread main;
-	/** Set it to true to end main loop and end program gracefully */
+	/**
+	 * Set it to true to end main loop and end program gracefully
+	 */
 	public static boolean finished = false;
 	
 	public static Settings settings = new Settings().setDebug();
@@ -47,7 +49,7 @@ public class BHBot {
 			boolean access = AccessControl.check(timeout);
 			if (!access) {
 				log("Error: access token expired or was unable to retrieve a new one. Quiting...");
-				return ;
+				return;
 			}
 		}
 		
@@ -55,11 +57,11 @@ public class BHBot {
 		boolean settingsProcessed = false;
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("settings")) {
-				processCommand("loadsettings " + args[i+1]);
+				processCommand("loadsettings " + args[i + 1]);
 				settingsProcessed = true;
 				i++;
 			} else if (args[i].equals("chromedriveraddress")) {
-				chromeDriverAddress = args[i+1];
+				chromeDriverAddress = args[i + 1];
 				i++;
 			}
 		}
@@ -68,19 +70,18 @@ public class BHBot {
 		
 		processCommand("start");
 		
-	    Console console = System.console();
-	    Scanner scanner = new Scanner(System.in);
+		Console console = System.console();
+		Scanner scanner = new Scanner(System.in);
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		while (!finished) {
-	        String s;
+			String s;
 			try {
 				//System.out.print("> ");
 				s = br.readLine();
 				//s = console.readLine();
 				//s = scanner.nextLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return;
 			}
@@ -91,20 +92,20 @@ public class BHBot {
 				e.printStackTrace();
 			}
 		}
-
+		
 		if (mainThread.isAlive()) {
 			try {
 				// wait for 10 seconds for the main thread to terminate
 				log("Waiting for main thread to finish... (timeout=10s)");
-				mainThread.join(10*MainThread.SECOND);
-			} catch (InterruptedException e) {
+				mainThread.join(10 * MainThread.SECOND);
+			} catch (InterruptedException e) {e.printStackTrace();
 			}
 			if (mainThread.isAlive()) {
 				log("Main thread is still alive. Force stopping it now...");
 				mainThread.interrupt();
 				try {
 					mainThread.join(); // until thread stops
-				} catch (InterruptedException e) {
+				} catch (InterruptedException e) {e.printStackTrace();
 				}
 			}
 		}
@@ -134,7 +135,7 @@ public class BHBot {
 			mainThread.start();
 		} else if (c.equals("restart")) {
 			main.restart(false);
-		}else if (c.equals("session")) {
+		} else if (c.equals("session")) {
 			/*
 			SessionStorage ss = main.driver.getSessionStorage();
 			printSet(ss.keySet());
@@ -145,7 +146,7 @@ public class BHBot {
 			*/
 		} else if (c.equals("hijack")) {
 			String[] cc = c.split(" ");
-
+			
 			//*** not finished
 		} else if (c.equals("save")) {
 			main.saveCookies();
@@ -154,27 +155,27 @@ public class BHBot {
 		} else if (c.equals("shot")) {
 			try {
 				Shutterbug.shootElement(main.driver, main.driver.findElement(By.id("game")), false)
-				.withName("shot")
-				.save(".")
+						.withName("shot")
+						.save(".")
 				;
 			} catch (Exception e) {
 				Shutterbug.shootPage(main.driver)
-				.withName("shot")
-				.save(".")
+						.withName("shot")
+						.save(".")
 				;
 			}
-
+			
 			log("Screenshot saved.");
 		} else if (c.equals("pause")) {
 			scheduler.pause();
 		} else if (c.equals("resume")) {
 			scheduler.resume();
 		} else if (c.equals("test")) {
-			BufferedImage src = MainThread.loadImage("C:/Tomaz/BHBot/screenshots/(shot) trials on right side of screen.png");
-			BufferedImage cue = MainThread.loadImage("E:/Eclipse/workspace/BHBot/cues/cueTrials2.png");
-			MarvinSegment seg = MainThread.findSubimage(src, new Cue("test", cue));
+			//BufferedImage src = MainThread.loadImage("C:/Tomaz/BHBot/screenshots/(shot) trials on right side of screen.png");
+			//BufferedImage cue = MainThread.loadImage("E:/Eclipse/workspace/BHBot/cues/cueTrials2.png");
+			//MarvinSegment seg = MainThread.findSubimage(src, new Cue("test", cue));
 			
-			log("Image test: " + seg);
+			log("Test stuff command. Empty, for now. ");
 		} else if (c.equals("reload")) {
 			settings.load();
 			log("Settings reloaded from disk.");
@@ -184,7 +185,7 @@ public class BHBot {
 			boolean done = false;
 			long timer = Misc.getTime();
 			do {
-				if (Misc.getTime() - timer > 60*MainThread.SECOND) break;
+				if (Misc.getTime() - timer > 60 * MainThread.SECOND) break;
 				main.sleep(500);
 				try {
 					done = main.driver.findElement(By.id("ssaInterstitialNotification")).getAttribute("style").contains("opacity: 1");
@@ -199,22 +200,22 @@ public class BHBot {
 							break;
 						}
 						btnClose.click();
-
+						
 						break;
 					}
 				} catch (Exception e) {
 					btnClose = null;
 				}
 			} while (btnClose == null);
-
+			
 			if (btnClose == null) {
 				BHBot.log("Could not find CLAIM YOUR REWARD button!");
 			} else {
 				BHBot.log("Found CLAIM YOUR REWARD button!");
 			}
 		} else if (c.equals("test3")) {
-			log("Detecting character dialog cues...");
-			
+			log("Detecting character dialog cues, test. Empty right now, fam.");
+			/*
 			final Color cuec1 = new Color(238, 241, 249); // white
 			final Color cuec2 = new Color(82, 90, 98); // gray
 			Color col;
@@ -222,30 +223,31 @@ public class BHBot {
 			BufferedImage img = MainThread.loadImage("C:/Tomaz/Bit Heroes/yeti dialog 2.png");
 			MarvinSegment right = MainThread.findSubimage(img, MainThread.cues.get("DialogRight"));
 			MarvinSegment left = MainThread.findSubimage(img, MainThread.cues.get("DialogLeft"));
-
+			
 			log("Image test right: " + right);
 			log("Image test left: " + left);
 			
 			// double check right-side dialog cue:
 			if (right != null) {
 				if (
-						!(new Color(img.getRGB(right.x2+1, right.y1+24))).equals(cuec1) ||
-						!(new Color(img.getRGB(right.x2+4, right.y1+24))).equals(cuec2)
+						!(new Color(img.getRGB(right.x2 + 1, right.y1 + 24))).equals(cuec1) ||
+								!(new Color(img.getRGB(right.x2 + 4, right.y1 + 24))).equals(cuec2)
 						)
 					right = null;
 			}
-
+			
 			// double check left-side dialog cue:
 			if (left != null) {
 				if (
-						!(new Color(img.getRGB(left.x1-1, left.y1+24))).equals(cuec1) ||
-						!(new Color(img.getRGB(left.x1-4, left.y1+24))).equals(cuec2)
+						!(new Color(img.getRGB(left.x1 - 1, left.y1 + 24))).equals(cuec1) ||
+								!(new Color(img.getRGB(left.x1 - 4, left.y1 + 24))).equals(cuec2)
 						)
 					left = null;
 			}
 			
 			log("Image test right: " + right);
 			log("Image test left: " + left);
+			*/
 		} else if (params[0].equals("loadsettings")) {
 			String file = Settings.DEFAULT_SETTINGS_FILE;
 			if (params.length > 1)
@@ -256,7 +258,7 @@ public class BHBot {
 			main.resetTimers();
 			log("Readout timers reset.");
 		} else if (c.equals("crash")) {
-			int i = 3/0;
+			int i = 3 / 0;
 		} else if (c.equals("hide")) {
 			main.hideBrowser();
 			settings.hideWindowOnRestart = true;
@@ -268,7 +270,7 @@ public class BHBot {
 			int i = c.indexOf(" ");
 			if (i == -1)
 				return;
-			list.add(c.substring(i+1));
+			list.add(c.substring(i + 1));
 			settings.load(list);
 			log("Settings updated manually: <" + list.get(0) + ">");
 		} else if (params[0].equals("do")) {
@@ -304,7 +306,7 @@ public class BHBot {
 			main.readScreen();
 			int current = main.detectDifficulty();
 			log("Detected difficulty: " + current);
-
+			
 			if (params.length > 1) {
 				int goal = Integer.parseInt(params[1]);
 				log("Goal difficulty: " + goal);
@@ -315,7 +317,7 @@ public class BHBot {
 			main.readScreen();
 			int current = main.detectCost();
 			log("Detected cost: " + current);
-
+			
 			if (params.length > 1) {
 				int goal = Integer.parseInt(params[1]);
 				log("Goal cost: " + goal);
@@ -332,5 +334,5 @@ public class BHBot {
 			log("Set key: " + s);
 		}
 	}
-
+	
 }

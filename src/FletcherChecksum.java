@@ -3,10 +3,10 @@
 /**
  * A simple checksum algorithm.
  * Can be used with both integers and floats (floats are converted to integers, as they are: 4 bytes to 4 bytes).
- * <p> 
+ * <p>
  * See: <br>
  * https://en.wikipedia.org/wiki/Fletcher's_checksum
- * 
+ *
  * @author Betalord
  */
 public class FletcherChecksum {
@@ -21,7 +21,7 @@ public class FletcherChecksum {
 	public void add(float block) {
 		add(Float.floatToIntBits(block)); // https://docs.oracle.com/javase/7/docs/api/java/lang/Float.html
 	}
-
+	
 	public void add(String block) {
 		for (byte b : block.getBytes())
 			add(b);

@@ -25,14 +25,14 @@ public class AccessControl {
 			; // will use the default username
 		else {
 			user = s;
-			BHBot.log("User token loaded from " + USER_FILE + ": <" + user+  ">");
+			BHBot.log("User token loaded from " + USER_FILE + ": <" + user + ">");
 		}
 		
 		// generate serial key:
 		FletcherChecksum checksum = new FletcherChecksum();
 		checksum.add(Misc.getExePath());
 		serial = "" + checksum.getChecksum();
-
+		
 		accessToken = null;
 		try {
 			accessToken = requestToken(timeout);
@@ -42,8 +42,8 @@ public class AccessControl {
 		}
 		
 		if (accessToken != null) {
-	    	saveAccessToken(accessToken);
-	    	//***BHBot.log("Access token saved: <" + accessToken + ">.");
+			saveAccessToken(accessToken);
+			//***BHBot.log("Access token saved: <" + accessToken + ">.");
 		}
 		
 		loadAccessToken();
@@ -51,7 +51,7 @@ public class AccessControl {
 		// check if access token is valid:
 		if (accessToken == null)
 			return false;
-
+		
 		if (accessTokenIssued > System.currentTimeMillis()) // user might have tempered with system time
 			return false;
 		
@@ -59,14 +59,14 @@ public class AccessControl {
 			long timestamp = getExpirationTimestamp(accessToken, serial);
 			if (timestamp < System.currentTimeMillis()) // token has expired!
 				return false;
-		} catch (Exception e) {
+		} catch (Exception e) {e.printStackTrace();
 			return false;
 		}
 		
 		//***BHBot.log("Access token valid until: " + new Date(getExpirationTimestamp(accessToken, serial)));
 		return true;
 	}
-
+	
 	private static void loadAccessToken() {
 		accessTokenIssued = 0;
 		accessToken = null;
@@ -80,12 +80,13 @@ public class AccessControl {
 				return;
 			long timeIssued = Long.parseLong(s[0]);
 			//long timeExpiration = getExpirationTimestamp(s[1], serial);
-
+			
 			// OK now copy over to the public token:
 			accessTokenIssued = timeIssued;
 			accessToken = s[1];
 		} catch (Exception e) {
-			return ;
+			e.printStackTrace();
+			return;
 		}
 	}
 	
@@ -98,16 +99,16 @@ public class AccessControl {
 	 */
 	private static String requestToken(int timeout) throws Exception {
 		String address = REMOTE_ADDRESS + ":" + REMOTE_PORT + "/bhbot/getaccesstoken?user=" + URLEncoder.encode(user, "UTF-8") + "&serial=" + serial;
-
+		
 		URL url = new URL(address);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
+		
 		// optional default is GET
 		con.setRequestMethod("GET");
-
+		
 		// add request header
 		con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
+		
 		// System.out.println("Sending 'GET' request to URL : " + url);
 		int responseCode;
 		con.setConnectTimeout(timeout);
@@ -117,19 +118,19 @@ public class AccessControl {
 			return null;
 		}
 		// System.out.println("Response Code : " + responseCode);
-
+		
 		if (responseCode == 404 || responseCode == 500) {
 			BHBot.log("Error: unable to obtain access token (" + responseCode + ").");
 			return null;
 		}
-
+		
 		InputStream in = con.getInputStream();
 		//OutputStream out = new FileOutputStream("/Users/ravikiran/Desktop/abc.jpg");
 		String resp = ""; // response from the server
 		try {
 			byte[] bytes = new byte[2048];
 			int length;
-
+			
 			while ((length = in.read(bytes)) != -1) {
 				//out.write(bytes, 0, length);
 				resp += new String(bytes, 0, length);
@@ -138,7 +139,7 @@ public class AccessControl {
 			in.close();
 			//out.close();
 		}
-
+		
 		return resp;
 	}
 	

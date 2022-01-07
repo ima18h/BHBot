@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -21,56 +22,55 @@ import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 
-/**
- * 
- * @author Betalord
- */
+
+
+
 public class Misc {
 	// https://stackoverflow.com/questions/1205135/how-to-encrypt-string-in-java
-    public static final String DEFAULT_ENCODING = "UTF-8"; 
-    static BASE64Encoder enc = new BASE64Encoder();
-    static BASE64Decoder dec = new BASE64Decoder();
-
-    public static String base64encode(String text) {
-        try {
-            return enc.encode(text.getBytes(DEFAULT_ENCODING));
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
-    }//base64encode
-
-    public static String base64decode(String text) {
-        try {
-            return new String(dec.decodeBuffer(text), DEFAULT_ENCODING);
-        } catch (IOException e) {
-            return null;
-        }
-    }//base64decode
-    
-    public static String xorMessage(String message, String key) {
-        try {
-            if (message == null || key == null) return null;
-
-            char[] keys = key.toCharArray();
-            char[] mesg = message.toCharArray();
-
-            int ml = mesg.length;
-            int kl = keys.length;
-            char[] newmsg = new char[ml];
-
-            for (int i = 0; i < ml; i++) {
-                newmsg[i] = (char)(mesg[i] ^ keys[i % kl]);
-            }//for i
-
-            return new String(newmsg);
-        } catch (Exception e) {
-            return null;
-        }
-    }//xorMessage
-    
+	private static Base64.Encoder encoder = Base64.getEncoder();
+	private static Base64.Decoder decoder = Base64.getDecoder();
+	private static final String DEFAULT_ENCODING = "UTF-8";
+	
+	public static String base64encode(String text) {
+		try {
+			return encoder.encodeToString(text.getBytes(DEFAULT_ENCODING));
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}//base64encode
+	
+	public static String base64decode(String text) {
+		try {
+			byte[] barr = decoder.decode(text.getBytes(StandardCharsets.UTF_8));
+			return new String(barr, DEFAULT_ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}//base64decode
+	
+	public static String xorMessage(String message, String key) {
+		try {
+			if (message == null || key == null) return null;
+			
+			char[] keys = key.toCharArray();
+			char[] mesg = message.toCharArray();
+			
+			int ml = mesg.length;
+			int kl = keys.length;
+			char[] newmsg = new char[ml];
+			
+			for (int i = 0; i < ml; i++) {
+				newmsg[i] = (char) (mesg[i] ^ keys[i % kl]);
+			}//for i
+			
+			return new String(newmsg);
+		} catch (Exception e) {
+			return null;
+		}
+	}//xorMessage
+	
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("<HH:mm:ss>");
 	
 	public static final DecimalFormat num4Digits = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
@@ -81,9 +81,9 @@ public class Misc {
 	public static void log(String s) {
 		System.out.println("<" + dateFormat.format(new Date()) + "> " + s);
 	}
-
+	
 	/**
-	 * Return time in milliseconds from the start of the system. Can have a negative value. 
+	 * Return time in milliseconds from the start of the system. Can have a negative value.
 	 */
 	public static long getTime() {
 		return System.nanoTime() / 1000000;
@@ -91,17 +91,18 @@ public class Misc {
 	
 	public static String getStackTrace() {
 		String r = "";
-
+		
 		for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
 			r += ste + "\n";
 		}
-
+		
 		return r;
 	}
-
+	
 	public static String readTextFile(String file) {
 		return readTextFile(file, false);
 	}
+	
 	// http://stackoverflow.com/questions/4716503/reading-a-plain-text-file-in-java
 	public static String readTextFile(String file, boolean ignoreErrors) {
 		BufferedReader br;
@@ -119,7 +120,7 @@ public class Misc {
 				return everything;
 			} finally {
 				br.close();
-			}			
+			}
 		} catch (IOException e) {
 			if (!ignoreErrors)
 				e.printStackTrace();
@@ -141,19 +142,23 @@ public class Misc {
 				return lines;
 			} finally {
 				br.close();
-			}			
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-
-	/** Returns true on success. */
+	
+	/**
+	 * Returns true on success.
+	 */
 	public static boolean saveTextFile(String file, String contents) {
 		return saveTextFile(file, contents, false);
 	}
 	
-	/** Returns true on success. */
+	/**
+	 * Returns true on success.
+	 */
 	public static boolean saveTextFile(String file, String contents, boolean ignoreErrors) {
 		BufferedWriter bw;
 		
@@ -162,14 +167,14 @@ public class Misc {
 			// create parent folder(s) if needed:
 			File parent = f.getParentFile();
 			if (parent != null && !parent.exists())
-				parent.mkdirs(); 
+				parent.mkdirs();
 			
 			bw = new BufferedWriter(new FileWriter(f));
 			try {
 				bw.write(contents);
 			} finally {
 				bw.close();
-			}			
+			}
 		} catch (IOException e) {
 			if (!ignoreErrors)
 				e.printStackTrace();
@@ -180,12 +185,12 @@ public class Misc {
 	
 	// https://stackoverflow.com/questions/1383797/java-hashmap-how-to-get-key-from-value
 	public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
-	    for (Entry<T, E> entry : map.entrySet()) {
-	        if (Objects.equals(value, entry.getValue())) {
-	            return entry.getKey();
-	        }
-	    }
-	    return null;
+		for (Entry<T, E> entry : map.entrySet()) {
+			if (Objects.equals(value, entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
 	
 	public static String millisToHumanForm(int millis) {
@@ -195,7 +200,7 @@ public class Misc {
 		int h = m / 60;
 		m = m % 60;
 		
-		if (s==0 && m==0 && h==0)
+		if (s == 0 && m == 0 && h == 0)
 			return "0s";
 		
 		return (h > 0 ? (h + "h") : "") + (m > 0 ? (m + "m") : "") + (s > 0 ? (s + "s") : "");
@@ -219,11 +224,11 @@ public class Misc {
 	
 	public static boolean saveImage(BufferedImage img, String file) {
 		try {
-		    // retrieve image
-		    File outputfile = new File(file);
-		    ImageIO.write(img, "png", outputfile);
-		} catch (IOException e) {
-		    return false;
+			// retrieve image
+			File outputfile = new File(file);
+			ImageIO.write(img, "png", outputfile);
+		} catch (IOException e) {e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
@@ -248,27 +253,27 @@ public class Misc {
 		for (String s : list)
 			r += s + ", ";
 		if (r.length() > 0)
-			r = r.substring(0, r.length()-2); // remove last ", "
+			r = r.substring(0, r.length() - 2); // remove last ", "
 		return r;
 	}
-
+	
 	public static String listToString(EnumSet<?> list) {
 		String r = "";
 		for (Object e : list)
 			r += e + ", ";
-		r = r .substring(0, r.length()-2);
+		r = r.substring(0, r.length() - 2);
 		return r;
 	}
 	
-	/** 
+	/**
 	 * https://stackoverflow.com/questions/320542/how-to-get-the-path-of-a-running-jar-file
+	 *
 	 * @return path to the exe (without an exe). Example: "/E:/Eclipse/workspace/BHBot/bin/".
 	 */
 	public static String getExePath() {
 		try {
 			return URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource(".").getPath(), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -276,7 +281,6 @@ public class Misc {
 		try {
 			return (new File(Misc.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())).getAbsolutePath();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
